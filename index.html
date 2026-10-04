@@ -56,7 +56,14 @@
       filter:saturate(.90) contrast(1.08) brightness(.68);
       transform:scale(1.03) translate3d(calc(var(--px) * -.10),calc(var(--py) * -.10),0);
       transition:transform .9s cubic-bezier(.2,.7,.2,1);
-      will-change:transform;
+      will-change:transform,opacity;
+      opacity:0;
+      transition:
+        transform .9s cubic-bezier(.2,.7,.2,1),
+        opacity 1.05s linear;
+    }
+    .bg-video.is-active{
+      opacity:1;
     }
 
     .veil{
@@ -350,10 +357,10 @@
 </head>
 <body>
   <main class="page" id="page">
-    <video class="bg-video bg-video-a is-active" id="bgVideoA" autoplay muted playsinline preload="auto" aria-hidden="true">
+    <video class="bg-video bg-video-a is-active" id="bgVideoA" autoplay muted loop playsinline preload="auto" aria-hidden="true">
       <source src="./assets/hero-bg.mp4?v=tunnel-20261004-3" type="video/mp4" />
     </video>
-    <video class="bg-video bg-video-b" id="bgVideoB" muted playsinline preload="auto" aria-hidden="true">
+    <video class="bg-video bg-video-b" id="bgVideoB" autoplay muted loop playsinline preload="auto" aria-hidden="true">
       <source src="./assets/hero-bg.mp4?v=tunnel-20261004-3" type="video/mp4" />
     </video>
     <div class="veil" aria-hidden="true"></div>
@@ -406,7 +413,18 @@
       const videos=[bgVideoA,bgVideoB];
       let activeIndex=0;
       let switching=false;
-      const crossfadeLead=1.15;
+      const crossfadeLead=1.08;
+      const fadeMs=1080;
+
+      // Keep both videos playing from the start. The hidden layer stays decoded,
+      // so switching never reveals an unloaded/frozen first frame.
+      videos.forEach(v=>{
+        v.muted=true;
+        v.loop=true;
+        v.play().catch(()=>{});
+      });
+
+      bgVideoB.currentTime=0.18;
 
       const armNext=()=>{
         const current=videos[activeIndex];
@@ -416,30 +434,29 @@
         const remaining=current.duration-current.currentTime;
         if(remaining<=crossfadeLead){
           switching=true;
-          next.currentTime=0;
+
+          // Seek the already-playing hidden layer to the start of the tunnel.
+          try{ next.currentTime=.04; }catch(e){}
           next.play().catch(()=>{});
+
           requestAnimationFrame(()=>{
-            next.classList.add('is-active');
-            current.classList.remove('is-active');
+            requestAnimationFrame(()=>{
+              next.classList.add('is-active');
+              current.classList.remove('is-active');
+            });
           });
 
           setTimeout(()=>{
-            current.pause();
-            current.currentTime=0;
+            // Reset the old layer while it is fully hidden, but keep it playing/warm.
+            try{ current.currentTime=.04; }catch(e){}
+            current.play().catch(()=>{});
             activeIndex=1-activeIndex;
             switching=false;
-          },1200);
+          },fadeMs+80);
         }
       };
 
-      videos.forEach(v=>{
-        v.addEventListener('timeupdate',armNext,{passive:true});
-        v.addEventListener('ended',()=>{
-          v.currentTime=0;
-        });
-      });
-
-      bgVideoA.play().catch(()=>{});
+      videos.forEach(v=>v.addEventListener('timeupdate',armNext,{passive:true}));
     }
 
     if(!reduce){
