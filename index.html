@@ -307,6 +307,102 @@
       50%{text-shadow:0 0 24px rgba(184,235,109,.28)}
     }
 
+    .transition-flash{
+      position:fixed;
+      z-index:2147483646;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      left:var(--fx,50%);
+      top:var(--fy,50%);
+      transform:translate(-50%,-50%) scale(.2);
+      opacity:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle,
+          rgba(255,255,255,.98) 0 8%,
+          rgba(207,230,90,.94) 14%,
+          rgba(184,235,109,.54) 34%,
+          rgba(184,235,109,.15) 54%,
+          transparent 72%);
+      filter:blur(.2px);
+      mix-blend-mode:screen;
+    }
+    .transition-veil{
+      position:fixed;
+      inset:0;
+      z-index:2147483645;
+      pointer-events:none;
+      opacity:0;
+      background:
+        radial-gradient(circle at var(--fx,50%) var(--fy,50%),
+          rgba(205,240,126,.16),
+          rgba(4,7,6,.18) 28%,
+          rgba(4,7,6,.78) 68%,
+          #050706 100%);
+    }
+    .transition-rings{
+      position:fixed;
+      z-index:2147483644;
+      left:var(--fx,50%);
+      top:var(--fy,50%);
+      width:80px;
+      height:80px;
+      transform:translate(-50%,-50%) scale(.5);
+      border-radius:50%;
+      border:1px solid rgba(207,230,90,.55);
+      opacity:0;
+      pointer-events:none;
+      box-shadow:
+        0 0 0 20px rgba(207,230,90,.04),
+        0 0 60px rgba(207,230,90,.14);
+    }
+    .page.is-transitioning .transition-flash{
+      animation:flashBurst .62s cubic-bezier(.14,.8,.22,1) forwards;
+    }
+    .page.is-transitioning .transition-veil{
+      animation:veilIn .62s ease forwards;
+    }
+    .page.is-transitioning .transition-rings{
+      animation:ringExpand .62s cubic-bezier(.14,.8,.22,1) forwards;
+    }
+    .page.is-transitioning .shell{
+      animation:shellExit .62s cubic-bezier(.16,.8,.22,1) forwards;
+    }
+    .page.is-transitioning .bg-video{
+      filter:saturate(1) contrast(1.14) brightness(.84);
+      transform:scale(1.085);
+    }
+    .choice.is-triggered{
+      border-color:rgba(207,230,90,.58)!important;
+      box-shadow:
+        0 0 0 1px rgba(207,230,90,.20),
+        0 0 48px rgba(207,230,90,.20),
+        0 28px 80px rgba(0,0,0,.42)!important;
+    }
+
+    @keyframes flashBurst{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
+      18%{opacity:1}
+      62%{opacity:.88;transform:translate(-50%,-50%) scale(34)}
+      100%{opacity:0;transform:translate(-50%,-50%) scale(52)}
+    }
+    @keyframes ringExpand{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(.45)}
+      22%{opacity:.95}
+      100%{opacity:0;transform:translate(-50%,-50%) scale(8)}
+    }
+    @keyframes veilIn{
+      0%{opacity:0}
+      45%{opacity:.28}
+      100%{opacity:1}
+    }
+    @keyframes shellExit{
+      0%{opacity:1;filter:blur(0);transform:scale(1)}
+      55%{opacity:.92;filter:blur(.3px);transform:scale(1.01)}
+      100%{opacity:0;filter:blur(3px);transform:scale(1.035)}
+    }
+
     @media (max-width:720px){
       body{overflow:auto}
       .page{min-height:100svh}
@@ -365,6 +461,9 @@
     </video>
     <div class="veil" aria-hidden="true"></div>
     <div class="glow" id="glow" aria-hidden="true"></div>
+    <div class="transition-rings" aria-hidden="true"></div>
+    <div class="transition-flash" aria-hidden="true"></div>
+    <div class="transition-veil" aria-hidden="true"></div>
 
     <div class="shell">
       <div class="top">
@@ -458,6 +557,33 @@
 
       videos.forEach(v=>v.addEventListener('timeupdate',armNext,{passive:true}));
     }
+
+    document.querySelectorAll('.choice').forEach(card=>{
+      card.addEventListener('click',e=>{
+        if(
+          e.defaultPrevented ||
+          e.button!==0 ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+        ) return;
+
+        e.preventDefault();
+        const href=card.href;
+        if(reduce){
+          window.location.href=href;
+          return;
+        }
+        const rect=card.getBoundingClientRect();
+        const fx=e.clientX || rect.left+rect.width/2;
+        const fy=e.clientY || rect.top+rect.height/2;
+
+        page.style.setProperty('--fx',fx+'px');
+        page.style.setProperty('--fy',fy+'px');
+        card.classList.add('is-triggered');
+        page.classList.add('is-transitioning');
+
+        setTimeout(()=>{ window.location.href=href; },560);
+      });
+    });
 
     if(!reduce){
       let tx=0,ty=0,cx=0,cy=0;
