@@ -115,8 +115,24 @@
       display:grid;
       justify-items:center;
       text-align:center;
-      gap:24px;
+      gap:20px;
       transform-style:preserve-3d;
+    }
+
+    .descriptor{
+      margin:0;
+      color:rgba(238,243,239,.64);
+      font-size:11px;
+      line-height:1.35;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:0;
+      transform:translateY(8px);
+      animation:descriptorIn .8s .12s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    .descriptor .key{
+      color:var(--green);
+      font-weight:700;
     }
 
     h1{
@@ -201,6 +217,13 @@
       font-size:11px;
       letter-spacing:.015em;
     }
+    .choice-result{
+      display:block;
+      margin-top:3px;
+      color:rgba(244,247,243,.54);
+      font-size:9px;
+      letter-spacing:.045em;
+    }
     .key{
       color:var(--green);
       font-weight:700;
@@ -221,6 +244,31 @@
     }
 
 
+    .help-cta{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-top:2px;
+      color:rgba(244,247,243,.58);
+      font-size:10px;
+      letter-spacing:.045em;
+      text-decoration:none;
+      transition:color .22s ease,transform .22s ease;
+      opacity:0;
+      animation:descriptorIn .8s .58s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    .help-cta:hover{
+      color:var(--green);
+      transform:translateY(-1px);
+    }
+    .help-cta span:last-child{
+      color:var(--green);
+      font-size:13px;
+    }
+
+    @keyframes descriptorIn{
+      to{opacity:1;transform:translateY(0)}
+    }
     @keyframes brandIn{
       to{opacity:1;transform:translateY(0)}
     }
@@ -276,6 +324,13 @@
       }
       .choice h2{font-size:26px}
       .choice p{font-size:11px}
+      .descriptor{
+        max-width:320px;
+        font-size:9px;
+        letter-spacing:.1em;
+      }
+      .choice-result{font-size:8.5px}
+      .help-cta{font-size:9px}
       .bg-video{
         object-position:center;
         transform:scale(1.06);
@@ -307,6 +362,7 @@
       </div>
 
       <section class="hero" aria-labelledby="hero-title">
+        <p class="descriptor">Contenido, <span class="key">diseño</span> y experiencias digitales para marcas.</p>
         <h1 id="hero-title">¿Qué querés <span class="accent">crear?</span></h1>
 
         <div class="choices">
@@ -314,6 +370,7 @@
             <div class="choice-copy">
               <h2>Contenido con <span class="key">IA</span></h2>
               <p><span class="key">UGC</span> · <span class="key">Ads</span> · Product Videos</p>
+              <small class="choice-result">Para mostrar y vender mejor.</small>
             </div>
             <span class="arrow" aria-hidden="true">↗</span>
           </a>
@@ -322,11 +379,15 @@
             <div class="choice-copy">
               <h2>Diseño <span class="key">Web</span></h2>
               <p><span class="key">Landing</span> · Desarrollo · <span class="key">Conversión</span></p>
+              <small class="choice-result">Para ordenar y convertir visitas.</small>
             </div>
             <span class="arrow" aria-hidden="true">↗</span>
           </a>
         </div>
 
+        <a class="help-cta" href="https://ig.me/m/patocreando?ref=w61000387" aria-label="Consultar qué servicio conviene">
+          <span>¿No sabés cuál necesitás? Te digo qué haría.</span><span aria-hidden="true">↗</span>
+        </a>
       </section>
     </div>
   </main>
