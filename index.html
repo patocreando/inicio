@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070909" />
+  <title>Pato Creando — Contenido IA + Diseño Web</title>
+  <meta name="description" content="Contenido con IA y diseño web para marcas y negocios." />
+  <style>
+    :root{
+      --bg:#060808;
+      --text:#f4f7f3;
+      --muted:#a1aaa4;
+      --green:#b8eb6d;
+      --line:rgba(255,255,255,.11);
+      --glass:rgba(7,11,9,.46);
+      --mx:50%;
+      --my:50%;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      width:100%;
+      min-height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    body{overflow:hidden}
+    a{color:inherit;text-decoration:none}
+
+    .page{
+      position:relative;
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      isolation:isolate;
+      overflow:hidden;
+      background:
+        radial-gradient(900px 580px at var(--mx) var(--my),rgba(184,235,109,.08),transparent 60%),
+        linear-gradient(145deg,#070909,#0a0d0c 55%,#050706);
+    }
+
+    .bg-video{
+      position:absolute;
+      inset:0;
+      z-index:-4;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      filter:saturate(.86) contrast(1.06) brightness(.72);
+    }
+
+    .veil{
+      position:absolute;
+      inset:0;
+      z-index:-3;
+      background:
+        radial-gradient(circle at 50% 42%,transparent 0 18%,rgba(4,7,6,.14) 55%,rgba(4,7,6,.54) 100%),
+        linear-gradient(180deg,rgba(4,7,6,.18),rgba(4,7,6,.42));
+      pointer-events:none;
+    }
+
+    .glow{
+      position:absolute;
+      z-index:-2;
+      left:50%;
+      top:48%;
+      width:min(700px,72vw);
+      aspect-ratio:1;
+      transform:translate(-50%,-50%);
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(184,235,109,.08),transparent 62%);
+      filter:blur(30px);
+      pointer-events:none;
+      transition:transform .22s ease-out;
+    }
+
+    .shell{
+      width:min(1040px,calc(100% - 40px));
+      display:grid;
+      gap:34px;
+      padding:28px 0;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .brand{
+      font-size:11px;
+      font-weight:760;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+    }
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .status:before{
+      content:"";
+      width:6px;height:6px;border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 14px rgba(184,235,109,.65);
+    }
+
+    .hero{
+      display:grid;
+      justify-items:center;
+      text-align:center;
+      gap:24px;
+    }
+
+    h1{
+      margin:0;
+      max-width:820px;
+      font-size:clamp(46px,7.4vw,96px);
+      line-height:.92;
+      letter-spacing:-.065em;
+      font-weight:650;
+    }
+    .accent{color:var(--green)}
+
+    .choices{
+      width:min(820px,100%);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .choice{
+      min-height:118px;
+      padding:19px 20px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
+        var(--glass);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      text-align:left;
+      box-shadow:0 18px 55px rgba(0,0,0,.24);
+      transition:
+        transform .28s cubic-bezier(.2,.7,.2,1),
+        border-color .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .choice:hover{
+      transform:translateY(-5px);
+      border-color:rgba(184,235,109,.34);
+      background:
+        linear-gradient(180deg,rgba(184,235,109,.055),rgba(255,255,255,.014)),
+        rgba(7,11,9,.52);
+      box-shadow:0 24px 75px rgba(0,0,0,.34);
+    }
+
+    .choice-copy{display:grid;gap:7px}
+    .choice h2{
+      margin:0;
+      font-size:clamp(24px,2.5vw,34px);
+      line-height:1;
+      letter-spacing:-.045em;
+      font-weight:620;
+    }
+    .choice p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.015em;
+    }
+    .key{color:var(--green)}
+
+    .arrow{
+      flex:0 0 auto;
+      font-size:21px;
+      color:rgba(255,255,255,.52);
+      transition:transform .25s ease,color .25s ease;
+    }
+    .choice:hover .arrow{
+      transform:translate(3px,-3px);
+      color:var(--green);
+    }
+
+    .micro{
+      color:rgba(220,226,221,.55);
+      font-size:10px;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+      text-align:center;
+    }
+
+    @media (max-width:720px){
+      body{overflow:auto}
+      .page{min-height:100svh}
+      .shell{
+        width:min(100% - 24px,640px);
+        gap:28px;
+        padding:18px 0;
+      }
+      .top{padding:0 3px}
+      .status{display:none}
+      h1{
+        max-width:520px;
+        font-size:clamp(46px,14vw,70px);
+      }
+      .choices{
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+      .choice{
+        min-height:104px;
+        padding:17px 18px;
+        border-radius:18px;
+      }
+      .choice h2{font-size:29px}
+      .choice p{font-size:11px}
+      .bg-video{object-position:center}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *,*:before,*:after{transition:none!important;animation:none!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="page" id="page">
+    <video class="bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+      <source src="./assets/hero-bg.mp4" type="video/mp4" />
+    </video>
+    <div class="veil" aria-hidden="true"></div>
+    <div class="glow" id="glow" aria-hidden="true"></div>
+
+    <div class="shell">
+      <div class="top">
+        <div class="brand">Pato Creando</div>
+        <div class="status">Disponible para proyectos</div>
+      </div>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">¿Qué querés <span class="accent">crear?</span></h1>
+
+        <div class="choices">
+          <a class="choice" href="https://patocreando.github.io/portfolio/" aria-label="Ver portfolio de contenido con IA">
+            <div class="choice-copy">
+              <h2>Contenido con <span class="key">IA</span></h2>
+              <p>UGC · <span class="key">Ads</span> · Product Videos</p>
+            </div>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <a class="choice" href="https://patocreando.github.io/web/" aria-label="Ver servicio de diseño web">
+            <div class="choice-copy">
+              <h2>Diseño <span class="key">Web</span></h2>
+              <p>Landing · Web · <span class="key">Conversión</span></p>
+            </div>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <div class="micro">Elegí un camino</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const page=document.getElementById('page');
+    const glow=document.getElementById('glow');
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!reduce){
+      addEventListener('pointermove',e=>{
+        const x=(e.clientX/innerWidth)*100;
+        const y=(e.clientY/innerHeight)*100;
+        page.style.setProperty('--mx',x+'%');
+        page.style.setProperty('--my',y+'%');
+        const dx=(e.clientX/innerWidth-.5)*18;
+        const dy=(e.clientY/innerHeight-.5)*14;
+        glow.style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))';
+      },{passive:true});
+    }
+  </script>
+</body>
+</html>
