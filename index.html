@@ -16,6 +16,10 @@
       --glass:rgba(7,11,9,.46);
       --mx:50%;
       --my:50%;
+      --px:0px;
+      --py:0px;
+      --rx:0deg;
+      --ry:0deg;
     }
     *{box-sizing:border-box}
     html,body{
@@ -50,6 +54,9 @@
       object-fit:cover;
       object-position:center;
       filter:saturate(.86) contrast(1.06) brightness(.72);
+      transform:scale(1.035) translate3d(calc(var(--px) * -.18),calc(var(--py) * -.18),0);
+      transition:transform .9s cubic-bezier(.2,.7,.2,1);
+      will-change:transform;
     }
 
     .veil{
@@ -82,6 +89,9 @@
       display:grid;
       gap:18px;
       padding:24px 0;
+      transform:translate3d(calc(var(--px) * .08),calc(var(--py) * .08),0);
+      transition:transform .8s cubic-bezier(.2,.7,.2,1);
+      will-change:transform;
     }
 
     .top{
@@ -96,6 +106,9 @@
       letter-spacing:.24em;
       text-transform:uppercase;
       color:rgba(244,247,243,.82);
+      opacity:0;
+      transform:translateY(-8px);
+      animation:brandIn .8s .08s cubic-bezier(.2,.7,.2,1) forwards;
     }
 
     .hero{
@@ -103,6 +116,7 @@
       justify-items:center;
       text-align:center;
       gap:24px;
+      transform-style:preserve-3d;
     }
 
     h1{
@@ -112,14 +126,24 @@
       line-height:.92;
       letter-spacing:-.065em;
       font-weight:650;
+      opacity:0;
+      transform:translate3d(calc(var(--px) * .16),calc(var(--py) * .16 + 16px),0);
+      animation:titleIn .95s .16s cubic-bezier(.16,.8,.22,1) forwards, titleFloat 6.8s 1.3s ease-in-out infinite;
+      will-change:transform;
     }
-    .accent{color:var(--green)}
+    .accent{
+      color:var(--green);
+      display:inline-block;
+      text-shadow:0 0 26px rgba(184,235,109,.12);
+      animation:accentBreathe 4.6s 1.5s ease-in-out infinite;
+    }
 
     .choices{
       width:min(760px,100%);
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
+      perspective:1000px;
     }
 
     .choice{
@@ -139,14 +163,23 @@
       text-align:left;
       box-shadow:0 18px 55px rgba(0,0,0,.24);
       transition:
-        transform .28s cubic-bezier(.2,.7,.2,1),
+        transform .34s cubic-bezier(.2,.7,.2,1),
         border-color .25s ease,
         background .25s ease,
         box-shadow .25s ease;
+      opacity:0;
+      will-change:transform;
+    }
+
+    .choice:nth-child(1){
+      animation:cardIn .85s .34s cubic-bezier(.16,.8,.22,1) forwards, cardFloatA 7s 1.3s ease-in-out infinite;
+    }
+    .choice:nth-child(2){
+      animation:cardIn .85s .43s cubic-bezier(.16,.8,.22,1) forwards, cardFloatB 7.6s 1.45s ease-in-out infinite;
     }
 
     .choice:hover{
-      transform:translateY(-5px);
+      transform:translateY(-6px) scale(1.018) rotateX(var(--ry)) rotateY(var(--rx));
       border-color:rgba(184,235,109,.34);
       background:
         linear-gradient(180deg,rgba(184,235,109,.055),rgba(255,255,255,.014)),
@@ -172,7 +205,9 @@
       color:var(--green);
       font-weight:700;
       text-shadow:0 0 18px rgba(184,235,109,.15);
+      animation:keyPulse 5.2s ease-in-out infinite;
     }
+    .choice:nth-child(2) .key{animation-delay:.65s}
 
     .arrow{
       flex:0 0 auto;
@@ -183,6 +218,38 @@
     .choice:hover .arrow{
       transform:translate(3px,-3px);
       color:var(--green);
+    }
+
+
+    @keyframes brandIn{
+      to{opacity:1;transform:translateY(0)}
+    }
+    @keyframes titleIn{
+      to{opacity:1;transform:translate3d(calc(var(--px) * .16),calc(var(--py) * .16),0)}
+    }
+    @keyframes cardIn{
+      from{opacity:0;transform:translateY(18px) scale(.975)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+    @keyframes titleFloat{
+      0%,100%{translate:0 0}
+      50%{translate:0 -5px}
+    }
+    @keyframes cardFloatA{
+      0%,100%{translate:0 0}
+      50%{translate:0 -4px}
+    }
+    @keyframes cardFloatB{
+      0%,100%{translate:0 -1px}
+      50%{translate:0 4px}
+    }
+    @keyframes accentBreathe{
+      0%,100%{filter:brightness(1);transform:scale(1)}
+      50%{filter:brightness(1.08);transform:scale(1.012)}
+    }
+    @keyframes keyPulse{
+      0%,100%{text-shadow:0 0 14px rgba(184,235,109,.10)}
+      50%{text-shadow:0 0 24px rgba(184,235,109,.28)}
     }
 
     @media (max-width:720px){
@@ -209,11 +276,20 @@
       }
       .choice h2{font-size:26px}
       .choice p{font-size:11px}
-      .bg-video{object-position:center}
+      .bg-video{
+        object-position:center;
+        transform:scale(1.06);
+      }
+      .shell{transform:none}
+      h1{transform:none}
+      .choice:nth-child(1),
+      .choice:nth-child(2){animation-name:cardIn}
     }
 
     @media (prefers-reduced-motion:reduce){
       *,*:before,*:after{transition:none!important;animation:none!important}
+      .brand,.choice,h1{opacity:1!important;transform:none!important}
+      .bg-video,.shell{transform:none!important}
     }
   </style>
 </head>
@@ -260,15 +336,43 @@
     const glow=document.getElementById('glow');
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!reduce){
+      let tx=0,ty=0,cx=0,cy=0;
+      const cards=[...document.querySelectorAll('.choice')];
+
       addEventListener('pointermove',e=>{
-        const x=(e.clientX/innerWidth)*100;
-        const y=(e.clientY/innerHeight)*100;
-        page.style.setProperty('--mx',x+'%');
-        page.style.setProperty('--my',y+'%');
-        const dx=(e.clientX/innerWidth-.5)*18;
-        const dy=(e.clientY/innerHeight-.5)*14;
-        glow.style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))';
+        const nx=e.clientX/innerWidth-.5;
+        const ny=e.clientY/innerHeight-.5;
+        tx=nx*22;
+        ty=ny*18;
+
+        page.style.setProperty('--mx',((nx+.5)*100)+'%');
+        page.style.setProperty('--my',((ny+.5)*100)+'%');
+        page.style.setProperty('--rx',(nx*3.2)+'deg');
+        page.style.setProperty('--ry',(-ny*2.6)+'deg');
+
+        glow.style.transform='translate(calc(-50% + '+(nx*22)+'px),calc(-50% + '+(ny*18)+'px))';
       },{passive:true});
+
+      const tick=()=>{
+        cx+=(tx-cx)*.055;
+        cy+=(ty-cy)*.055;
+        page.style.setProperty('--px',cx.toFixed(2)+'px');
+        page.style.setProperty('--py',cy.toFixed(2)+'px');
+        requestAnimationFrame(tick);
+      };
+      tick();
+
+      cards.forEach(card=>{
+        card.addEventListener('pointermove',e=>{
+          const r=card.getBoundingClientRect();
+          const x=(e.clientX-r.left)/r.width-.5;
+          const y=(e.clientY-r.top)/r.height-.5;
+          card.style.setProperty('--cardX',(x*7)+'deg');
+          card.style.setProperty('--cardY',(-y*6)+'deg');
+          card.style.transform='translateY(-6px) scale(1.018) rotateX('+(-y*5)+'deg) rotateY('+(x*6)+'deg)';
+        });
+        card.addEventListener('pointerleave',()=>{card.style.transform=''});
+      });
     }
   </script>
 </body>
