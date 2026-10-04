@@ -350,8 +350,11 @@
 </head>
 <body>
   <main class="page" id="page">
-    <video class="bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-      <source src="./assets/hero-bg.mp4?v=tunnel-20261004-2" type="video/mp4" />
+    <video class="bg-video bg-video-a is-active" id="bgVideoA" autoplay muted playsinline preload="auto" aria-hidden="true">
+      <source src="./assets/hero-bg.mp4?v=tunnel-20261004-3" type="video/mp4" />
+    </video>
+    <video class="bg-video bg-video-b" id="bgVideoB" muted playsinline preload="auto" aria-hidden="true">
+      <source src="./assets/hero-bg.mp4?v=tunnel-20261004-3" type="video/mp4" />
     </video>
     <div class="veil" aria-hidden="true"></div>
     <div class="glow" id="glow" aria-hidden="true"></div>
@@ -395,7 +398,50 @@
   <script>
     const page=document.getElementById('page');
     const glow=document.getElementById('glow');
+    const bgVideoA=document.getElementById('bgVideoA');
+    const bgVideoB=document.getElementById('bgVideoB');
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if(bgVideoA && bgVideoB){
+      const videos=[bgVideoA,bgVideoB];
+      let activeIndex=0;
+      let switching=false;
+      const crossfadeLead=1.15;
+
+      const armNext=()=>{
+        const current=videos[activeIndex];
+        const next=videos[1-activeIndex];
+        if(!current.duration || switching) return;
+
+        const remaining=current.duration-current.currentTime;
+        if(remaining<=crossfadeLead){
+          switching=true;
+          next.currentTime=0;
+          next.play().catch(()=>{});
+          requestAnimationFrame(()=>{
+            next.classList.add('is-active');
+            current.classList.remove('is-active');
+          });
+
+          setTimeout(()=>{
+            current.pause();
+            current.currentTime=0;
+            activeIndex=1-activeIndex;
+            switching=false;
+          },1200);
+        }
+      };
+
+      videos.forEach(v=>{
+        v.addEventListener('timeupdate',armNext,{passive:true});
+        v.addEventListener('ended',()=>{
+          v.currentTime=0;
+        });
+      });
+
+      bgVideoA.play().catch(()=>{});
+    }
+
     if(!reduce){
       let tx=0,ty=0,cx=0,cy=0;
       const cards=[...document.querySelectorAll('.choice')];
